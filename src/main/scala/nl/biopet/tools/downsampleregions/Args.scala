@@ -4,9 +4,11 @@ import java.io.File
 
 case class Args(bamFile: File = null,
                 bedFile: File = null,
-                intputR1: File = null,
-                intputR2: Option[File] = None,
-                outputR1: File = null,
-                outputR2: Option[File] = None,
+                inputR1: File = null,
+                inputR2: Option[File] = None,
+                outputR1A: File = null,
+                outputR2A: Option[File] = None,
+                outputR1B: File = null,
+                outputR2B: Option[File] = None,
                 deviation: Double = 0.0,
                 seed: Long = 0)
