@@ -31,7 +31,7 @@ object DownsampleRegions extends ToolCommand[Args] {
     require(regions.squishBed().length == regions.length, "Regions are overlapping, this is not allowed")
 
     val bamReader = SamReaderFactory.makeDefault.open(cmdArgs.bamFile)
-    //TODO: regions.validateContigs(bamReader.getFileHeader.getSequenceDictionary)
+    regions.validateContigs(bamReader.getFileHeader.getSequenceDictionary)
 
     val paired = {
       val it = bamReader.iterator()
@@ -45,13 +45,22 @@ object DownsampleRegions extends ToolCommand[Args] {
     var totalReads = 0L
     val removeIds: mutable.Set[String] = mutable.Set()
     for (region <- regions.allRecords) {
-      val fraction = region.score.get
-      removeIds ++= bamReader.query(region.chr, region.start, region.end, false).map { x =>
-        totalReads += 1
-        x.getReadName
+      val fraction = region.score.get + (cmdArgs.deviation * (Random.nextDouble() - 0.5))
+      val bamIt = bamReader.query(region.chr, region.start, region.end, false)
+      for (samRecord <- bamIt) {
+        def removeRead = {
+          totalReads += 1
+          val remove = Random.nextDouble() <= fraction
+          if (remove) {
+            removeIds += samRecord.getReadName
+          }
+        }
+
+        if (paired) {
+          if (!samRecord.isSecondaryOrSupplementary && samRecord.getFirstOfPairFlag) removeRead
+        } else removeRead
       }
-        .toSet
-        .filter(_ => Random.nextDouble() <= fraction)
+      bamIt.close()
     }
     bamReader.close()
 
@@ -87,9 +96,21 @@ object DownsampleRegions extends ToolCommand[Args] {
 
   def emptyArgs = Args()
 
-  def descriptionText = ??? //TODO
+  def descriptionText: String =
+    """
+      | This tool can be used to downsample specific regions.
+      | Each region can have it own fraction to downsample.
+      |
+      | All other reads will not be touched
+    """.stripMargin
 
-  def manualText = ??? //TODO
+  def manualText: String =
+    """
+      |
+    """.stripMargin //TODO
 
-  def exampleText = ??? //TODO
+  def exampleText: String =
+    """
+      |
+    """.stripMargin //TODO
 }
