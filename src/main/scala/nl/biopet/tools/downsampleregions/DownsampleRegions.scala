@@ -48,17 +48,16 @@ object DownsampleRegions extends ToolCommand[Args] {
       val fraction = region.score.get + (cmdArgs.deviation * (Random.nextDouble() - 0.5))
       val bamIt = bamReader.query(region.chr, region.start, region.end, false)
       for (samRecord <- bamIt) {
-        def removeRead = {
+        def removeRead() = {
           totalReads += 1
           val remove = Random.nextDouble() <= fraction
           if (remove) {
             removeIds += samRecord.getReadName
           }
         }
-
         if (paired) {
-          if (!samRecord.isSecondaryOrSupplementary && samRecord.getFirstOfPairFlag) removeRead
-        } else removeRead
+          if (!samRecord.isSecondaryOrSupplementary && samRecord.getFirstOfPairFlag) removeRead()
+        } else removeRead()
       }
       bamIt.close()
     }
@@ -101,16 +100,23 @@ object DownsampleRegions extends ToolCommand[Args] {
       | This tool can be used to downsample specific regions.
       | Each region can have it own fraction to downsample.
       |
-      | All other reads will not be touched
+      | All other reads will not be touched.
     """.stripMargin
 
   def manualText: String =
     """
+      | To run this tool a bam file and a bed file is required. The bed file should be formatted like this:
+      | <contig> <start> <end> <name> <fraction>
       |
-    """.stripMargin //TODO
+      | By setting --deviation the fraction can deviate from it randomly.
+    """.stripMargin
 
   def exampleText: String =
     """
+      | Single end example:
+      | java -jar <tool_jar> --bamFile <bam file> --bedFile <bed file> --inputR1 <input R1 fastq> --outputR1 <output R1 fastq>
       |
-    """.stripMargin //TODO
+      | Paired end example:
+      | java -jar <tool_jar> --bamFile <bam file> --bedFile <bed file> --inputR1 <input R1 fastq> --inputR2 <input R2 fastq> --outputR1 <output R1 fastq> --outputR2 <output R2 fastq>
+    """.stripMargin
 }
