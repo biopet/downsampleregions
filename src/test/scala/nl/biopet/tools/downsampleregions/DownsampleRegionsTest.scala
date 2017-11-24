@@ -103,4 +103,34 @@ class DownsampleRegionsTest extends ToolTest[Args] {
     }.getMessage shouldBe s"requirement failed: Input R1 file does not exist: ${notExist.getAbsolutePath}"
   }
 
+  @Test
+  def testInputR2NotExist(): Unit = {
+    val notExist = File.createTempFile("test.", ".test")
+    notExist.delete()
+    intercept[IllegalArgumentException] {
+      DownsampleRegions.main(Array(
+        "--bamFile", resourcePath("/wgs1.bam"),
+        "--bedFile", resourcePath("/regions.bed"),
+        "--inputR1", resourcePath("/R1.fq.gz"),
+        "--inputR2", notExist.getAbsolutePath,
+        "--outputR1A", "a",
+        "--outputR1B", "a"
+      ))
+    }.getMessage shouldBe s"requirement failed: Input R2 file does not exist: ${notExist.getAbsolutePath}"
+  }
+
+  @Test
+  def testBedEmpty(): Unit = {
+    val notExist = File.createTempFile("test.", ".test")
+    intercept[IllegalArgumentException] {
+      DownsampleRegions.main(Array(
+        "--bamFile", resourcePath("/wgs1.bam"),
+        "--bedFile", notExist.getAbsolutePath,
+        "--inputR1", resourcePath("/R1.fq.gz"),
+        "--outputR1A", "a",
+        "--outputR1B", "a"
+      ))
+    }.getMessage shouldBe s"requirement failed: Bed file is empty"
+  }
+
 }
