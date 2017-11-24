@@ -39,7 +39,7 @@ object DownsampleRegions extends ToolCommand[Args] {
       it.close()
       firstRecord.getReadPairedFlag
     }
-    require(paired == cmdArgs.inputR2.isDefined, "Bam contains paired reads but input A R2 is not defined")
+    require(paired == cmdArgs.inputR2.isDefined, "Bam contains paired reads but input R2 is not defined")
     require(paired == cmdArgs.outputR2A.isDefined, "Bam contains paired reads but output A R2 is not defined")
     require(paired == cmdArgs.outputR2B.isDefined, "Bam contains paired reads but output B R2 is not defined")
 
