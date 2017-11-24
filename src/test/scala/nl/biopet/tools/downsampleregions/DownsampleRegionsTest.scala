@@ -57,4 +57,50 @@ class DownsampleRegionsTest extends ToolTest[Args] {
 
     r1bSize shouldBe r2bSize
   }
+
+  @Test
+  def testBamNotExist(): Unit = {
+    val notExist = File.createTempFile("test.", ".test")
+    notExist.delete()
+    intercept[IllegalArgumentException] {
+      DownsampleRegions.main(Array(
+        "--bamFile", notExist.getAbsolutePath,
+        "--bedFile", resourcePath("/regions.bed"),
+        "--inputR1", resourcePath("/R1.fq.gz"),
+        "--outputR1A", "a",
+        "--outputR1B", "a"
+      ))
+    }.getMessage shouldBe s"requirement failed: Bam file does not exist: ${notExist.getAbsolutePath}"
+  }
+
+  @Test
+  def testBedNotExist(): Unit = {
+    val notExist = File.createTempFile("test.", ".test")
+    notExist.delete()
+    intercept[IllegalArgumentException] {
+      DownsampleRegions.main(Array(
+        "--bamFile", resourcePath("/wgs1.bam"),
+        "--bedFile", notExist.getAbsolutePath,
+        "--inputR1", resourcePath("/R1.fq.gz"),
+        "--outputR1A", "a",
+        "--outputR1B", "a"
+      ))
+    }.getMessage shouldBe s"requirement failed: Bed file does not exist: ${notExist.getAbsolutePath}"
+  }
+
+  @Test
+  def testInputR1NotExist(): Unit = {
+    val notExist = File.createTempFile("test.", ".test")
+    notExist.delete()
+    intercept[IllegalArgumentException] {
+      DownsampleRegions.main(Array(
+        "--bamFile", resourcePath("/wgs1.bam"),
+        "--bedFile", resourcePath("/regions.bed"),
+        "--inputR1", notExist.getAbsolutePath,
+        "--outputR1A", "a",
+        "--outputR1B", "a"
+      ))
+    }.getMessage shouldBe s"requirement failed: Input R1 file does not exist: ${notExist.getAbsolutePath}"
+  }
+
 }
