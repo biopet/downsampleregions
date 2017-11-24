@@ -10,7 +10,7 @@ libraryDependencies += "com.github.biopet" %% "ngs-utils" % "0.2-SNAPSHOT" chang
 
 libraryDependencies += "com.github.biopet" %% "tool-test-utils" % "0.1-SNAPSHOT" % Test changing()
 
-mainClass in assembly := Some("nl.biopet.tools.downsampleregion.DownsampleRegion")
+mainClass in assembly := Some("nl.biopet.tools.downsampleregions.DownsampleRegions")
 
 useGpg := true
 
