@@ -1,11 +1,9 @@
-- env:
-    Name: Tool testing
-  language: scala
-  scala:
-    - 2.11.11
-  script:
-    - sbt clean coverage test coverageReport &&
-      sbt coverageAggregate
-  after_success:
-    - sbt coveralls
-    - bash <(curl -s https://codecov.io/bash)
+language: scala
+scala:
+  - 2.11.11
+script:
+  - sbt clean coverage test coverageReport &&
+    sbt coverageAggregate
+after_success:
+  - sbt coveralls
+  - bash <(curl -s https://codecov.io/bash)
