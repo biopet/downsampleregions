@@ -59,6 +59,37 @@ class DownsampleRegionsTest extends ToolTest[Args] {
   }
 
   @Test
+  def testSingleEnd(): Unit = {
+    val outputR1A = File.createTempFile("test.", ".fq.gz")
+    outputR1A.deleteOnExit()
+    val outputR1B = File.createTempFile("test.", ".fq.gz")
+    outputR1B.deleteOnExit()
+
+    DownsampleRegions.main(Array(
+      "--bamFile", resourcePath("/wgs1.single_end.bam"),
+      "--bedFile", resourcePath("/regions.bed"),
+      "--inputR1", resourcePath("/R1.fq.gz"),
+      "--outputR1A", outputR1A.getAbsolutePath,
+      "--outputR1B", outputR1B.getAbsolutePath
+    ))
+
+    val readerInput = new FastqReader(resourceFile("/R1.fq.gz"))
+    val inputSize = readerInput.iterator().size
+
+    val readerR1A = new FastqReader(outputR1B)
+    val r1aSize = readerR1A.iterator().size
+
+    r1aSize < inputSize shouldBe true
+
+    val readerR1B = new FastqReader(outputR1B)
+    val r1bSize = readerR1B.iterator().size
+
+    r1bSize < inputSize shouldBe true
+
+  }
+
+
+  @Test
   def testBamNotExist(): Unit = {
     val notExist = File.createTempFile("test.", ".test")
     notExist.delete()
