@@ -4,6 +4,7 @@ import java.io.File
 
 import nl.biopet.utils.tool.AbstractOptParser
 
+/** Argparser for [[DownsampleRegions]] */
 class ArgsParser(cmdName: String) extends AbstractOptParser[Args](cmdName) {
   opt[File]("bamFile")
     .abbr("b")

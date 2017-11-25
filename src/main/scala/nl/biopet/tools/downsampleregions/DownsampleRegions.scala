@@ -9,12 +9,20 @@ import scala.collection.JavaConversions._
 import scala.collection.mutable
 import scala.util.Random
 
+/** This tool can be used to downsample specific regions  */
 object DownsampleRegions extends ToolCommand[Args] {
+
+  /** Main entry point from the commandline for [[DownsampleRegions]] */
   def main(args: Array[String]): Unit = {
     val cmdArgs = cmdArrayToArgs(args)
 
     logger.info("Start")
+    downsampleRegions(cmdArgs)
+    logger.info("Done")
+  }
 
+  /** Main entry point for [[DownsampleRegions]] */
+  def downsampleRegions(cmdArgs: Args): Unit = {
     require(cmdArgs.bamFile.exists(), s"Bam file does not exist: ${cmdArgs.bamFile}")
     require(cmdArgs.bedFile.exists(), s"Bed file does not exist: ${cmdArgs.bedFile}")
     require(cmdArgs.inputR1.exists(), s"Input R1 file does not exist: ${cmdArgs.inputR1}")
@@ -99,7 +107,6 @@ object DownsampleRegions extends ToolCommand[Args] {
       writerR2B.close()
     }
 
-    logger.info("Done")
   }
 
   def argsParser = new ArgsParser(toolName)

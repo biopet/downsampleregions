@@ -2,6 +2,7 @@ package nl.biopet.tools.downsampleregions
 
 import java.io.File
 
+/** Args for [[DownsampleRegions]] */
 case class Args(bamFile: File = null,
                 bedFile: File = null,
                 inputR1: File = null,
