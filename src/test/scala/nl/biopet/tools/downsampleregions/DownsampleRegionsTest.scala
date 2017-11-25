@@ -1,6 +1,6 @@
 package nl.biopet.tools.downsampleregions
 
-import java.io.File
+import java.io.{File, PrintWriter}
 
 import htsjdk.samtools.fastq.FastqReader
 import nl.biopet.utils.test.tools.ToolTest
@@ -175,4 +175,89 @@ class DownsampleRegionsTest extends ToolTest[Args] {
       ))
     }.getMessage shouldBe s"requirement failed: Bam contains paired reads but output B R2 is not defined"
   }
+
+  @Test
+  def testNoScores(): Unit = {
+    val bedFile = File.createTempFile("test.", ".bed")
+    val writer = new PrintWriter(bedFile)
+    writer.println("chr1\t1\t2")
+    writer.close()
+    bedFile.deleteOnExit()
+    intercept[IllegalArgumentException] {
+      DownsampleRegions.main(Array(
+        "--bamFile", resourcePath("/wgs1.bam"),
+        "--bedFile", bedFile.getAbsolutePath,
+        "--inputR1", resourcePath("/R1.fq.gz"),
+        "--inputR2", resourcePath("/R2.fq.gz"),
+        "--outputR1A", "a",
+        "--outputR1B", "a",
+        "--outputR2A", "a"
+      ))
+    }.getMessage shouldBe s"requirement failed: Region does not have a score/fraction"
+  }
+
+  @Test
+  def testHighScores(): Unit = {
+    val bedFile = File.createTempFile("test.", ".bed")
+    val writer = new PrintWriter(bedFile)
+    writer.println("chr1\t1\t2\tname\t1.1")
+    writer.close()
+    bedFile.deleteOnExit()
+    intercept[IllegalArgumentException] {
+      DownsampleRegions.main(Array(
+        "--bamFile", resourcePath("/wgs1.bam"),
+        "--bedFile", bedFile.getAbsolutePath,
+        "--inputR1", resourcePath("/R1.fq.gz"),
+        "--inputR2", resourcePath("/R2.fq.gz"),
+        "--outputR1A", "a",
+        "--outputR1B", "a",
+        "--outputR2A", "a",
+        "--outputR2B", "a"
+      ))
+    }.getMessage shouldBe s"requirement failed: Region score/fraction should be between -1.0 and 1.0"
+  }
+
+  @Test
+  def testLowScores(): Unit = {
+    val bedFile = File.createTempFile("test.", ".bed")
+    val writer = new PrintWriter(bedFile)
+    writer.println("chr1\t1\t2\tname\t-1.1")
+    writer.close()
+    bedFile.deleteOnExit()
+    intercept[IllegalArgumentException] {
+      DownsampleRegions.main(Array(
+        "--bamFile", resourcePath("/wgs1.bam"),
+        "--bedFile", bedFile.getAbsolutePath,
+        "--inputR1", resourcePath("/R1.fq.gz"),
+        "--inputR2", resourcePath("/R2.fq.gz"),
+        "--outputR1A", "a",
+        "--outputR1B", "a",
+        "--outputR2A", "a",
+        "--outputR2B", "a"
+      ))
+    }.getMessage shouldBe s"requirement failed: Region score/fraction should be between -1.0 and 1.0"
+  }
+
+  @Test
+  def testOverlapScores(): Unit = {
+    val bedFile = File.createTempFile("test.", ".bed")
+    val writer = new PrintWriter(bedFile)
+    writer.println("chr1\t1\t10\tname\t-0.1")
+    writer.println("chr1\t5\t15\tname\t-0.1")
+    writer.close()
+    bedFile.deleteOnExit()
+    intercept[IllegalArgumentException] {
+      DownsampleRegions.main(Array(
+        "--bamFile", resourcePath("/wgs1.bam"),
+        "--bedFile", bedFile.getAbsolutePath,
+        "--inputR1", resourcePath("/R1.fq.gz"),
+        "--inputR2", resourcePath("/R2.fq.gz"),
+        "--outputR1A", "a",
+        "--outputR1B", "a",
+        "--outputR2A", "a",
+        "--outputR2B", "a"
+      ))
+    }.getMessage shouldBe s"requirement failed: Regions are overlapping, this is not allowed"
+  }
+
 }

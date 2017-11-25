@@ -33,8 +33,8 @@ object DownsampleRegions extends ToolCommand[Args] {
     val regions = BedRecordList.fromFile(cmdArgs.bedFile)
     require(regions.allRecords.nonEmpty, "Bed file is empty")
     regions.allRecords.foreach(region => require(region.score.isDefined, "Region does not have a score/fraction"))
-    regions.allRecords.foreach(region => require(region.score.get >= -1.0 || region.score.get <= 1.0, "Region score/fraction should be between -1.0 and 1.0"))
-    require(regions.squishBed().length == regions.length, "Regions are overlapping, this is not allowed")
+    regions.allRecords.foreach(region => require(region.score.get >= -1.0 && region.score.get <= 1.0, "Region score/fraction should be between -1.0 and 1.0"))
+    require(regions.squishBed(strandSensitive = false, nameSensitive = false).length == regions.length, "Regions are overlapping, this is not allowed")
 
     val bamReader = SamReaderFactory.makeDefault.open(cmdArgs.bamFile)
     regions.validateContigs(bamReader.getFileHeader.getSequenceDictionary)
