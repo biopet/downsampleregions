@@ -133,4 +133,46 @@ class DownsampleRegionsTest extends ToolTest[Args] {
     }.getMessage shouldBe s"requirement failed: Bed file is empty"
   }
 
+  @Test
+  def testNoInputR2Paired(): Unit = {
+    intercept[IllegalArgumentException] {
+      DownsampleRegions.main(Array(
+        "--bamFile", resourcePath("/wgs1.bam"),
+        "--bedFile", resourcePath("/regions.bed"),
+        "--inputR1", resourcePath("/R1.fq.gz"),
+        "--outputR1A", "a",
+        "--outputR1B", "a"
+      ))
+    }.getMessage shouldBe s"requirement failed: Bam contains paired reads but input R2 is not defined"
+  }
+
+  @Test
+  def testNoOutputR2APaired(): Unit = {
+    intercept[IllegalArgumentException] {
+      DownsampleRegions.main(Array(
+        "--bamFile", resourcePath("/wgs1.bam"),
+        "--bedFile", resourcePath("/regions.bed"),
+        "--inputR1", resourcePath("/R1.fq.gz"),
+        "--inputR2", resourcePath("/R2.fq.gz"),
+        "--outputR1A", "a",
+        "--outputR1B", "a",
+        "--outputR2B", "a"
+      ))
+    }.getMessage shouldBe s"requirement failed: Bam contains paired reads but output A R2 is not defined"
+  }
+
+  @Test
+  def testNoOutputR2BPaired(): Unit = {
+    intercept[IllegalArgumentException] {
+      DownsampleRegions.main(Array(
+        "--bamFile", resourcePath("/wgs1.bam"),
+        "--bedFile", resourcePath("/regions.bed"),
+        "--inputR1", resourcePath("/R1.fq.gz"),
+        "--inputR2", resourcePath("/R2.fq.gz"),
+        "--outputR1A", "a",
+        "--outputR1B", "a",
+        "--outputR2A", "a"
+      ))
+    }.getMessage shouldBe s"requirement failed: Bam contains paired reads but output B R2 is not defined"
+  }
 }
