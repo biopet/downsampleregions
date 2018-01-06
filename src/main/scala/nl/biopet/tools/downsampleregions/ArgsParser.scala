@@ -2,10 +2,11 @@ package nl.biopet.tools.downsampleregions
 
 import java.io.File
 
-import nl.biopet.utils.tool.AbstractOptParser
+import nl.biopet.utils.tool.{AbstractOptParser, ToolCommand}
 
 /** Argparser for [[DownsampleRegions]] */
-class ArgsParser(cmdName: String) extends AbstractOptParser[Args](cmdName) {
+class ArgsParser(toolCommand: ToolCommand[Args])
+    extends AbstractOptParser[Args](toolCommand) {
   opt[File]("bamFile")
     .abbr("b")
     .required()
