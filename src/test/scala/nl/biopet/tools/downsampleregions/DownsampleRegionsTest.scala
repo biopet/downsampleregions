@@ -1,3 +1,24 @@
+/*
+ * Copyright (c) 2017 Biopet
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package nl.biopet.tools.downsampleregions
 
 import java.io.{File, PrintWriter}
@@ -30,15 +51,24 @@ class DownsampleRegionsTest extends ToolTest[Args] {
     val outputR2B = File.createTempFile("test.", ".fq.gz")
     outputR2B.deleteOnExit()
 
-    DownsampleRegions.main(Array(
-      "--bamFile", resourcePath("/wgs1.bam"),
-      "--bedFile", resourcePath("/regions.bed"),
-      "--inputR1", resourcePath("/R1.fq.gz"),
-      "--inputR2", resourcePath("/R2.fq.gz"),
-      "--outputR1A", outputR1A.getAbsolutePath,
-      "--outputR2A", outputR2A.getAbsolutePath,
-      "--outputR1B", outputR1B.getAbsolutePath,
-      "--outputR2B", outputR2B.getAbsolutePath
+    DownsampleRegions.main(
+      Array(
+        "--bamFile",
+        resourcePath("/wgs1.bam"),
+        "--bedFile",
+        resourcePath("/regions.bed"),
+        "--inputR1",
+        resourcePath("/R1.fq.gz"),
+        "--inputR2",
+        resourcePath("/R2.fq.gz"),
+        "--outputR1A",
+        outputR1A.getAbsolutePath,
+        "--outputR2A",
+        outputR2A.getAbsolutePath,
+        "--outputR1B",
+        outputR1B.getAbsolutePath,
+        "--outputR2B",
+        outputR2B.getAbsolutePath
       ))
 
     val readerR1A = new FastqReader(outputR1A)
@@ -65,13 +95,19 @@ class DownsampleRegionsTest extends ToolTest[Args] {
     val outputR1B = File.createTempFile("test.", ".fq.gz")
     outputR1B.deleteOnExit()
 
-    DownsampleRegions.main(Array(
-      "--bamFile", resourcePath("/wgs1.single_end.bam"),
-      "--bedFile", resourcePath("/regions.bed"),
-      "--inputR1", resourcePath("/R1.fq.gz"),
-      "--outputR1A", outputR1A.getAbsolutePath,
-      "--outputR1B", outputR1B.getAbsolutePath
-    ))
+    DownsampleRegions.main(
+      Array(
+        "--bamFile",
+        resourcePath("/wgs1.single_end.bam"),
+        "--bedFile",
+        resourcePath("/regions.bed"),
+        "--inputR1",
+        resourcePath("/R1.fq.gz"),
+        "--outputR1A",
+        outputR1A.getAbsolutePath,
+        "--outputR1B",
+        outputR1B.getAbsolutePath
+      ))
 
     val readerInput = new FastqReader(resourceFile("/R1.fq.gz"))
     val inputSize = readerInput.iterator().size
@@ -87,20 +123,24 @@ class DownsampleRegionsTest extends ToolTest[Args] {
     r1bSize < inputSize shouldBe true
 
   }
-
-
   @Test
   def testBamNotExist(): Unit = {
     val notExist = File.createTempFile("test.", ".test")
     notExist.delete()
     intercept[IllegalArgumentException] {
-      DownsampleRegions.main(Array(
-        "--bamFile", notExist.getAbsolutePath,
-        "--bedFile", resourcePath("/regions.bed"),
-        "--inputR1", resourcePath("/R1.fq.gz"),
-        "--outputR1A", "a",
-        "--outputR1B", "a"
-      ))
+      DownsampleRegions.main(
+        Array(
+          "--bamFile",
+          notExist.getAbsolutePath,
+          "--bedFile",
+          resourcePath("/regions.bed"),
+          "--inputR1",
+          resourcePath("/R1.fq.gz"),
+          "--outputR1A",
+          "a",
+          "--outputR1B",
+          "a"
+        ))
     }.getMessage shouldBe s"requirement failed: Bam file does not exist: ${notExist.getAbsolutePath}"
   }
 
@@ -109,13 +149,19 @@ class DownsampleRegionsTest extends ToolTest[Args] {
     val notExist = File.createTempFile("test.", ".test")
     notExist.delete()
     intercept[IllegalArgumentException] {
-      DownsampleRegions.main(Array(
-        "--bamFile", resourcePath("/wgs1.bam"),
-        "--bedFile", notExist.getAbsolutePath,
-        "--inputR1", resourcePath("/R1.fq.gz"),
-        "--outputR1A", "a",
-        "--outputR1B", "a"
-      ))
+      DownsampleRegions.main(
+        Array(
+          "--bamFile",
+          resourcePath("/wgs1.bam"),
+          "--bedFile",
+          notExist.getAbsolutePath,
+          "--inputR1",
+          resourcePath("/R1.fq.gz"),
+          "--outputR1A",
+          "a",
+          "--outputR1B",
+          "a"
+        ))
     }.getMessage shouldBe s"requirement failed: Bed file does not exist: ${notExist.getAbsolutePath}"
   }
 
@@ -124,13 +170,19 @@ class DownsampleRegionsTest extends ToolTest[Args] {
     val notExist = File.createTempFile("test.", ".test")
     notExist.delete()
     intercept[IllegalArgumentException] {
-      DownsampleRegions.main(Array(
-        "--bamFile", resourcePath("/wgs1.bam"),
-        "--bedFile", resourcePath("/regions.bed"),
-        "--inputR1", notExist.getAbsolutePath,
-        "--outputR1A", "a",
-        "--outputR1B", "a"
-      ))
+      DownsampleRegions.main(
+        Array(
+          "--bamFile",
+          resourcePath("/wgs1.bam"),
+          "--bedFile",
+          resourcePath("/regions.bed"),
+          "--inputR1",
+          notExist.getAbsolutePath,
+          "--outputR1A",
+          "a",
+          "--outputR1B",
+          "a"
+        ))
     }.getMessage shouldBe s"requirement failed: Input R1 file does not exist: ${notExist.getAbsolutePath}"
   }
 
@@ -139,14 +191,21 @@ class DownsampleRegionsTest extends ToolTest[Args] {
     val notExist = File.createTempFile("test.", ".test")
     notExist.delete()
     intercept[IllegalArgumentException] {
-      DownsampleRegions.main(Array(
-        "--bamFile", resourcePath("/wgs1.bam"),
-        "--bedFile", resourcePath("/regions.bed"),
-        "--inputR1", resourcePath("/R1.fq.gz"),
-        "--inputR2", notExist.getAbsolutePath,
-        "--outputR1A", "a",
-        "--outputR1B", "a"
-      ))
+      DownsampleRegions.main(
+        Array(
+          "--bamFile",
+          resourcePath("/wgs1.bam"),
+          "--bedFile",
+          resourcePath("/regions.bed"),
+          "--inputR1",
+          resourcePath("/R1.fq.gz"),
+          "--inputR2",
+          notExist.getAbsolutePath,
+          "--outputR1A",
+          "a",
+          "--outputR1B",
+          "a"
+        ))
     }.getMessage shouldBe s"requirement failed: Input R2 file does not exist: ${notExist.getAbsolutePath}"
   }
 
@@ -154,56 +213,84 @@ class DownsampleRegionsTest extends ToolTest[Args] {
   def testBedEmpty(): Unit = {
     val notExist = File.createTempFile("test.", ".test")
     intercept[IllegalArgumentException] {
-      DownsampleRegions.main(Array(
-        "--bamFile", resourcePath("/wgs1.bam"),
-        "--bedFile", notExist.getAbsolutePath,
-        "--inputR1", resourcePath("/R1.fq.gz"),
-        "--outputR1A", "a",
-        "--outputR1B", "a"
-      ))
+      DownsampleRegions.main(
+        Array(
+          "--bamFile",
+          resourcePath("/wgs1.bam"),
+          "--bedFile",
+          notExist.getAbsolutePath,
+          "--inputR1",
+          resourcePath("/R1.fq.gz"),
+          "--outputR1A",
+          "a",
+          "--outputR1B",
+          "a"
+        ))
     }.getMessage shouldBe s"requirement failed: Bed file is empty"
   }
 
   @Test
   def testNoInputR2Paired(): Unit = {
     intercept[IllegalArgumentException] {
-      DownsampleRegions.main(Array(
-        "--bamFile", resourcePath("/wgs1.bam"),
-        "--bedFile", resourcePath("/regions.bed"),
-        "--inputR1", resourcePath("/R1.fq.gz"),
-        "--outputR1A", "a",
-        "--outputR1B", "a"
-      ))
+      DownsampleRegions.main(
+        Array(
+          "--bamFile",
+          resourcePath("/wgs1.bam"),
+          "--bedFile",
+          resourcePath("/regions.bed"),
+          "--inputR1",
+          resourcePath("/R1.fq.gz"),
+          "--outputR1A",
+          "a",
+          "--outputR1B",
+          "a"
+        ))
     }.getMessage shouldBe s"requirement failed: Bam contains paired reads but input R2 is not defined"
   }
 
   @Test
   def testNoOutputR2APaired(): Unit = {
     intercept[IllegalArgumentException] {
-      DownsampleRegions.main(Array(
-        "--bamFile", resourcePath("/wgs1.bam"),
-        "--bedFile", resourcePath("/regions.bed"),
-        "--inputR1", resourcePath("/R1.fq.gz"),
-        "--inputR2", resourcePath("/R2.fq.gz"),
-        "--outputR1A", "a",
-        "--outputR1B", "a",
-        "--outputR2B", "a"
-      ))
+      DownsampleRegions.main(
+        Array(
+          "--bamFile",
+          resourcePath("/wgs1.bam"),
+          "--bedFile",
+          resourcePath("/regions.bed"),
+          "--inputR1",
+          resourcePath("/R1.fq.gz"),
+          "--inputR2",
+          resourcePath("/R2.fq.gz"),
+          "--outputR1A",
+          "a",
+          "--outputR1B",
+          "a",
+          "--outputR2B",
+          "a"
+        ))
     }.getMessage shouldBe s"requirement failed: Bam contains paired reads but output A R2 is not defined"
   }
 
   @Test
   def testNoOutputR2BPaired(): Unit = {
     intercept[IllegalArgumentException] {
-      DownsampleRegions.main(Array(
-        "--bamFile", resourcePath("/wgs1.bam"),
-        "--bedFile", resourcePath("/regions.bed"),
-        "--inputR1", resourcePath("/R1.fq.gz"),
-        "--inputR2", resourcePath("/R2.fq.gz"),
-        "--outputR1A", "a",
-        "--outputR1B", "a",
-        "--outputR2A", "a"
-      ))
+      DownsampleRegions.main(
+        Array(
+          "--bamFile",
+          resourcePath("/wgs1.bam"),
+          "--bedFile",
+          resourcePath("/regions.bed"),
+          "--inputR1",
+          resourcePath("/R1.fq.gz"),
+          "--inputR2",
+          resourcePath("/R2.fq.gz"),
+          "--outputR1A",
+          "a",
+          "--outputR1B",
+          "a",
+          "--outputR2A",
+          "a"
+        ))
     }.getMessage shouldBe s"requirement failed: Bam contains paired reads but output B R2 is not defined"
   }
 
@@ -215,15 +302,23 @@ class DownsampleRegionsTest extends ToolTest[Args] {
     writer.close()
     bedFile.deleteOnExit()
     intercept[IllegalArgumentException] {
-      DownsampleRegions.main(Array(
-        "--bamFile", resourcePath("/wgs1.bam"),
-        "--bedFile", bedFile.getAbsolutePath,
-        "--inputR1", resourcePath("/R1.fq.gz"),
-        "--inputR2", resourcePath("/R2.fq.gz"),
-        "--outputR1A", "a",
-        "--outputR1B", "a",
-        "--outputR2A", "a"
-      ))
+      DownsampleRegions.main(
+        Array(
+          "--bamFile",
+          resourcePath("/wgs1.bam"),
+          "--bedFile",
+          bedFile.getAbsolutePath,
+          "--inputR1",
+          resourcePath("/R1.fq.gz"),
+          "--inputR2",
+          resourcePath("/R2.fq.gz"),
+          "--outputR1A",
+          "a",
+          "--outputR1B",
+          "a",
+          "--outputR2A",
+          "a"
+        ))
     }.getMessage shouldBe s"requirement failed: Region does not have a score/fraction"
   }
 
@@ -235,16 +330,25 @@ class DownsampleRegionsTest extends ToolTest[Args] {
     writer.close()
     bedFile.deleteOnExit()
     intercept[IllegalArgumentException] {
-      DownsampleRegions.main(Array(
-        "--bamFile", resourcePath("/wgs1.bam"),
-        "--bedFile", bedFile.getAbsolutePath,
-        "--inputR1", resourcePath("/R1.fq.gz"),
-        "--inputR2", resourcePath("/R2.fq.gz"),
-        "--outputR1A", "a",
-        "--outputR1B", "a",
-        "--outputR2A", "a",
-        "--outputR2B", "a"
-      ))
+      DownsampleRegions.main(
+        Array(
+          "--bamFile",
+          resourcePath("/wgs1.bam"),
+          "--bedFile",
+          bedFile.getAbsolutePath,
+          "--inputR1",
+          resourcePath("/R1.fq.gz"),
+          "--inputR2",
+          resourcePath("/R2.fq.gz"),
+          "--outputR1A",
+          "a",
+          "--outputR1B",
+          "a",
+          "--outputR2A",
+          "a",
+          "--outputR2B",
+          "a"
+        ))
     }.getMessage shouldBe s"requirement failed: Region score/fraction should be between -1.0 and 1.0"
   }
 
@@ -256,16 +360,25 @@ class DownsampleRegionsTest extends ToolTest[Args] {
     writer.close()
     bedFile.deleteOnExit()
     intercept[IllegalArgumentException] {
-      DownsampleRegions.main(Array(
-        "--bamFile", resourcePath("/wgs1.bam"),
-        "--bedFile", bedFile.getAbsolutePath,
-        "--inputR1", resourcePath("/R1.fq.gz"),
-        "--inputR2", resourcePath("/R2.fq.gz"),
-        "--outputR1A", "a",
-        "--outputR1B", "a",
-        "--outputR2A", "a",
-        "--outputR2B", "a"
-      ))
+      DownsampleRegions.main(
+        Array(
+          "--bamFile",
+          resourcePath("/wgs1.bam"),
+          "--bedFile",
+          bedFile.getAbsolutePath,
+          "--inputR1",
+          resourcePath("/R1.fq.gz"),
+          "--inputR2",
+          resourcePath("/R2.fq.gz"),
+          "--outputR1A",
+          "a",
+          "--outputR1B",
+          "a",
+          "--outputR2A",
+          "a",
+          "--outputR2B",
+          "a"
+        ))
     }.getMessage shouldBe s"requirement failed: Region score/fraction should be between -1.0 and 1.0"
   }
 
@@ -278,16 +391,25 @@ class DownsampleRegionsTest extends ToolTest[Args] {
     writer.close()
     bedFile.deleteOnExit()
     intercept[IllegalArgumentException] {
-      DownsampleRegions.main(Array(
-        "--bamFile", resourcePath("/wgs1.bam"),
-        "--bedFile", bedFile.getAbsolutePath,
-        "--inputR1", resourcePath("/R1.fq.gz"),
-        "--inputR2", resourcePath("/R2.fq.gz"),
-        "--outputR1A", "a",
-        "--outputR1B", "a",
-        "--outputR2A", "a",
-        "--outputR2B", "a"
-      ))
+      DownsampleRegions.main(
+        Array(
+          "--bamFile",
+          resourcePath("/wgs1.bam"),
+          "--bedFile",
+          bedFile.getAbsolutePath,
+          "--inputR1",
+          resourcePath("/R1.fq.gz"),
+          "--inputR2",
+          resourcePath("/R2.fq.gz"),
+          "--outputR1A",
+          "a",
+          "--outputR1B",
+          "a",
+          "--outputR2A",
+          "a",
+          "--outputR2B",
+          "a"
+        ))
     }.getMessage shouldBe s"requirement failed: Regions are overlapping, this is not allowed"
   }
 
